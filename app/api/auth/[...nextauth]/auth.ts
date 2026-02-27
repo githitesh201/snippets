@@ -86,11 +86,11 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async session({ token, session }) {
-      if (token) {
+      if (token && session.user) {
         session.user.id = token.id;
-        session.user.name = token.name;
-        session.user.email = token.email;
-        session.user.image = token.picture;
+        session.user.name = token.name ?? session.user.name;
+        session.user.email = token.email ?? session.user.email;
+        session.user.image = token.picture ?? session.user.image;
       }
 
       return session;
@@ -106,25 +106,32 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+      }
+
+      if (!token.email) {
+        return token;
+      }
+
       const dbUser = await prisma.user.findFirst({
         where: {
-          email: token.email!,
+          email: token.email,
         },
       });
 
       if (!dbUser) {
-        if (user) {
-          token.id = user?.id;
-        }
         return token;
       }
 
-      return {
-        id: dbUser.id,
-        name: dbUser.name,
-        email: dbUser.email,
-        picture: dbUser.image,
-      };
+      token.id = dbUser.id;
+      token.name = dbUser.name;
+      token.email = dbUser.email;
+      token.picture = dbUser.image;
+
+      return token;
     },
   },
 };
