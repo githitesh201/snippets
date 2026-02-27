@@ -2,7 +2,6 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import * as z from "zod";
-import { Prisma } from "@prisma/client";
 import { authOptions } from "../auth/[...nextauth]/auth";
 
 const createSnippetSchema = z.object({
@@ -79,20 +78,20 @@ export async function GET(request: Request) {
     const framework = searchParams.get("framework");
     const language = searchParams.get("language");
 
-    const where: Prisma.SnippetWhereInput = {
+    const where = {
       isPublic: true,
       ...(search && {
         OR: [
           {
             title: {
               contains: search,
-              mode: "insensitive",
+              mode: "insensitive" as const,
             },
           },
           {
             description: {
               contains: search,
-              mode: "insensitive",
+              mode: "insensitive" as const,
             },
           },
         ],
