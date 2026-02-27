@@ -74,8 +74,15 @@ export function AuthForm({ type }: AuthFormProps) {
         });
 
         if (!res.ok) {
-          const error = await res.json();
-          throw new Error(error.message);
+          let errorMessage = "Failed to create account";
+          try {
+            const error = await res.json();
+            errorMessage = error?.message || errorMessage;
+          } catch {
+            const text = await res.text();
+            if (text) errorMessage = text;
+          }
+          throw new Error(errorMessage);
         }
 
         toast.success("Account created successfully");

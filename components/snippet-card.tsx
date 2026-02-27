@@ -26,6 +26,8 @@ export function SnippetCard({ snippet }: SnippetCardProps) {
   const timeAgo = formatDistanceToNow(new Date(snippet.createdAt), {
     addSuffix: true,
   });
+  const authorName = snippet.author.name?.trim() || "Anonymous";
+  const authorInitials = authorName.slice(0, 2).toUpperCase();
 
   return (
     <Card className="group flex flex-col transition-colors hover:border-primary/50">
@@ -86,15 +88,13 @@ export function SnippetCard({ snippet }: SnippetCardProps) {
                     <Avatar className="h-6 w-6">
                       <AvatarImage
                         src={snippet.author.image || ""}
-                        alt={snippet.author.name}
+                        alt={authorName}
                       />
-                      <AvatarFallback>
-                        {snippet.author.name.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
+                      <AvatarFallback>{authorInitials}</AvatarFallback>
                     </Avatar>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent>{snippet.author.name}</TooltipContent>
+                <TooltipContent>{authorName}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
             <span className="flex items-center gap-1 text-sm text-muted-foreground">
