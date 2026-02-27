@@ -26,8 +26,11 @@ export function SnippetCard({ snippet }: SnippetCardProps) {
   const timeAgo = formatDistanceToNow(new Date(snippet.createdAt), {
     addSuffix: true,
   });
-  const authorName = snippet.author.name?.trim() || "Anonymous";
+  const authorName = snippet.author?.name?.trim() || "Anonymous";
   const authorInitials = authorName.slice(0, 2).toUpperCase();
+  const authorId = snippet.author?.id;
+  const authorImage = snippet.author?.image || "";
+  const tags = Array.isArray(snippet.tags) ? snippet.tags : [];
 
   return (
     <Card className="group flex flex-col transition-colors hover:border-primary/50">
@@ -66,14 +69,14 @@ export function SnippetCard({ snippet }: SnippetCardProps) {
               {snippet.framework}
             </Badge>
           )}
-          {snippet.tags.slice(0, 2).map((tag: string) => (
+          {tags.slice(0, 2).map((tag: string) => (
             <Badge key={tag} variant="outline" className="hover:bg-muted">
               {tag}
             </Badge>
           ))}
-          {snippet.tags.length > 2 && (
+          {tags.length > 2 && (
             <Badge variant="outline" className="hover:bg-muted">
-              +{snippet.tags.length - 2} more
+              +{tags.length - 2} more
             </Badge>
           )}
         </div>
@@ -84,12 +87,9 @@ export function SnippetCard({ snippet }: SnippetCardProps) {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link href={`/users/${snippet.author.id}`}>
+                  <Link href={authorId ? `/users/${authorId}` : "#"}>
                     <Avatar className="h-6 w-6">
-                      <AvatarImage
-                        src={snippet.author.image || ""}
-                        alt={authorName}
-                      />
+                      <AvatarImage src={authorImage} alt={authorName} />
                       <AvatarFallback>{authorInitials}</AvatarFallback>
                     </Avatar>
                   </Link>
