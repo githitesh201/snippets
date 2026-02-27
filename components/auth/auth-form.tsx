@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -35,7 +35,8 @@ interface AuthFormProps {
 
 export function AuthForm({ type }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,17 +54,14 @@ export function AuthForm({ type }: AuthFormProps) {
         const result = await signIn("credentials", {
           email: values.email,
           password: values.password,
-          redirect: false,
+          callbackUrl,
         });
 
         if (result?.error) {
           toast.error("Invalid email or password");
           return;
         }
-
-        toast.success("Signed in successfully");
-        router.push("/");
-        router.refresh();
+        return;
       } else {
         const res = await fetch("/api/auth/register", {
           method: "POST",
@@ -90,15 +88,13 @@ export function AuthForm({ type }: AuthFormProps) {
         const result = await signIn("credentials", {
           email: values.email,
           password: values.password,
-          redirect: false,
+          callbackUrl,
         });
 
         if (result?.error) {
           throw new Error("Failed to sign in");
         }
-
-        router.push("/");
-        router.refresh();
+        return;
       }
     } catch (error) {
       toast.error(
@@ -111,7 +107,7 @@ export function AuthForm({ type }: AuthFormProps) {
 
   const handleProviderSignIn = async (providerId: string) => {
     try {
-      await signIn(providerId, { callbackUrl: "/" });
+      await signIn(providerId, { callbackUrl });
     } catch (error) {
       toast.error("Something went wrong with the sign in");
     }
