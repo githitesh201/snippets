@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { FiltersSidebar } from "@/components/snippets/filters-sidebar";
 import { SnippetsGrid } from "@/components/snippets/snippets-grid";
 
-export default function SnippetsPage() {
+function SnippetsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [snippets, setSnippets] = useState<Snippet[]>([]);
@@ -116,5 +116,19 @@ export default function SnippetsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SnippetsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container py-6">
+          <div className="h-8 w-48 animate-pulse rounded-md bg-muted" />
+        </div>
+      }
+    >
+      <SnippetsPageContent />
+    </Suspense>
   );
 }

@@ -3,14 +3,17 @@ import { NextResponse } from "next/server";
 import { AIResponseParser } from "@/lib/utils/ai-parser";
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY!);
+const candidateModels = [
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-001",
+];
 
 export async function POST(req: Request) {
   try {
     const { prompt } = await req.json();
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    const result = await model.generateContent(`
+    const generationPrompt = `
       You are a code snippet generator. Generate a code snippet based on this request: "${prompt}"
       
       Important: Your response must be ONLY a valid JSON object with no additional text or formatting. Use this exact format:
@@ -32,7 +35,24 @@ export async function POST(req: Request) {
       5. Maximum 5 relevant tags
       6. Code should include comments and proper formatting
       7. Category must be exactly one of the specified values (case-sensitive)
-    `);
+    `;
+
+    let result;
+    let lastError: unknown;
+    for (const modelName of candidateModels) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        result = await model.generateContent(generationPrompt);
+        break;
+      } catch (error) {
+        console.error(`Model ${modelName} failed:`, error);
+        lastError = error;
+      }
+    }
+
+    if (!result) {
+      throw lastError;
+    }
 
     const response = result.response;
     const text = response.text();
