@@ -1,6 +1,7 @@
 import { AuthForm } from "@/components/auth/auth-form";
 import { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Sign Up - Code Snippets",
@@ -19,7 +20,9 @@ export default function SignUpPage() {
             Enter your email below to create your account
           </p>
         </div>
-        <AuthForm type="signup" />
+        <Suspense fallback={<div className="h-10" />}>
+          <AuthForm type="signup" />
+        </Suspense>
         <p className="px-8 text-center text-sm text-muted-foreground">
           <Link
             href="/auth/signin"
