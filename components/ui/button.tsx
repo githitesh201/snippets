@@ -11,7 +11,7 @@ const buttonVariants = cva(
     "disabled:pointer-events-none disabled:opacity-50",
     "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-transform",
     "before:absolute before:inset-0 before:rounded-[inherit] before:transition-all before:duration-300",
-    "active:before:duration-[50ms]",
+    "active:before:duration-50",
     "group overflow-hidden",
   ].join(" "),
   {
@@ -62,7 +62,7 @@ const buttonVariants = cva(
           "shadow-[0_0_0_0_rgba(0,0,0,0)] hover:shadow-[0_5px_15px_-3px_rgba(0,0,0,0.1)]",
           "before:absolute before:inset-0 before:-z-10 before:translate-x-[150%]",
           "before:rotate-[-45deg] before:bg-gradient-to-r before:from-transparent before:via-white/30",
-          "hover:before:translate-x-[-150%] before:transition-[transform] before:duration-[600ms]",
+          "hover:before:translate-x-[-150%] before:transition-[transform] before:duration-600",
           "active:scale-[0.98] active:before:bg-black/[0.08]",
           "[&_svg]:group-hover:translate-x-0.5",
         ].join(" "),
